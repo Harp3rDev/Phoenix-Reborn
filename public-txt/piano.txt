@@ -1,0 +1,10 @@
+javascript:void%20function(){(function(){var%20t=document.body.appendChild(document.createElement(%22script%22));t.onerror=function(){alert(%22Sorry,%20the%20script%20could%20not%20be%20loaded.%22)},t.src=%22https://rawgit.com/Krazete/bookmarklets/master/piano.js%22})()}();
+
+
+1. Copy the code at the top
+2. Press Ctrl-D to bookmark
+3. Go to more
+4. Paste the code over the url in the url section
+5. Save
+6. Clicking on it should bring a piano that is fun to play with
+7. Profit!
