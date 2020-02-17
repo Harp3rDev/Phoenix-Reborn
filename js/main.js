@@ -167,7 +167,7 @@ document.write( '    </svg>\n' );
 document.write( '  </div>\n' );
 document.write( '\n' );
 document.write( '  <div class=\"discord-dialog__container\">\n' );
-document.write('<img src="https://media.discordapp.net/attachments/488034376874196993/678835827027083274/Screenshot_1.png">/n');
+document.write('<img src="https://cdn.discordapp.com/attachments/418923835425816577/678869917252059136/icon.png">/n');
 document.write( '    <strong class=\"discord-dialog__strong-text\">Join Sosie Bacon Beats!!!</strong>\n' );
 document.write( '\n' );
 document.write( 'This server has like no one, and we would be very grateful if you joined! We also have titanembeds page if it is blocked\n' );
