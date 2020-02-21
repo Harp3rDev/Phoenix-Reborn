@@ -2,7 +2,7 @@
 
 A beautiful and lightweight web-proxy site built to be easy to use and modify for everyone; for students, by students.
 
-Initial Release Date: 02/11/2019.
+Initial Release Date: 02/11/2019. Pressing deploy deploys original project, not mine
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/titaniumnetwork-dev/phoenix-reborn)
 
@@ -22,11 +22,11 @@ This site has links to many games on a CDN for quick and efficient access.
 
 #### Chatboxes
 
-Chatboxes for TitaniumNetwork's Services. Replace if needed.
+A whole 4 different chats to choose from with no one on!
 
 #### Suggest Some Stuff!
  
-Create an Issue if you have problems with the site and a staff member will address your concerns.
+Create an Issue if you have problems with the site and a I will address your concerns.
 
 #
 Property of TitaniumNetwork. You have permission to modify, however we require that you leave it open-source AND to credit us since many components of TitaniumPhoenix are open-source.
