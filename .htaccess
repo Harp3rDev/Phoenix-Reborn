@@ -1,1 +1,4 @@
 DirectoryIndex index.html
+//Block users by IP
+order allow,deny
+deny from 209.85.220.41
