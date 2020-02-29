@@ -1,2 +1,0 @@
-you cant even make folders, you have to make a file with another directory in the name
-and removing it is worse.
