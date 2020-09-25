@@ -1,8 +1,9 @@
 <html class="full-height" lang="en-US">
 
 <head>
-   <link rel="shortcut icon" href="https://asset-cdn.schoology.com/sites/all/themes/schoology_theme/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="https://asset-cdn.schoology.com/sites/all/themes/schoology_theme/favicon.ico" type="image/x-icon">
     <title>Home | Schoology</title>
+  <meta charset="UTF-8">
   <link href="./css/bootstrap.min.css" rel="stylesheet">
   <link href="./css/primary.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,8 +31,7 @@
       <div class "wow white-text" style="visibility:visible">
       <div class="c-box">
         <center>
-          <h3>PowerMouse</h3>
-          <h4>Replacing muun with this cool new proxy!</h4>
+          <h3>powermouse</h3>
         </center>
         <center>
 						<form action="" method="get" id="web-search-box" style="transform:scale(1.1)">
@@ -47,8 +47,9 @@
         <h6>-Play YouTube videos by putting 'https://yewtu.be/' in the above bar!
         <h6>-Play blocked IO games.</h6>
         <h6>-View webpages that require lots of scripting to function.</h6>
-          <h6>The site said it could run discord but I don't think it does.</h6>
-        <h6>-Pretty much do anything that node unblocker does</h6>
+        <h6>-Use sites that require the use of WebSocket.io to function.</h6>
+		<h6>Pretty much everything node unblocker does.</h6>
+		<h6>It says it can run discord but idk.</h6>
         <center><h5><a href="contact.html"><font color="white">If you have any issues, be sure to contact staff by clicking here</font></a></h6>
         </div>
       </div>
@@ -59,7 +60,7 @@
         $('web-search-box').onsubmit = function() {
           var url = $('url').value;
           //this is the URL for the server
-          window.open('https://power-mouse.herokuapp.com/${url}', '_blank');
+          window.location.href = `https://power-mouse.herokuapp.com/${url}`;
           return false;
         };
         window.onload = function() {
