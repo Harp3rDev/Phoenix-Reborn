@@ -105,7 +105,7 @@ function error(statusCode, info) {
   return fs.readFileSync('public/assets/error.html', 'utf8').toString().replace('%ERROR%', `An error has occurred!`)
 }
 
-app.post('/mathSession', async (req, res) => {
+app.post('/createSession', async (req, res) => {
    if (req.body.url.startsWith('//')) {
      req.body.url = 'http:' + req.body.url;
    } else if (req.body.url.startsWith('https://') || req.body.url.startsWith('http://')) {
