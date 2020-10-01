@@ -1,79 +1,209 @@
-var alloy_data = document.querySelector('#_alloy_data');
+// Ajax Rewriting
 
-var url = alloy_data.getAttribute('url');
+let apData = document.getElementById('alloyData');
+let urlData = apData.getAttribute('data-alloyURL');
 
-var prefix = alloy_data.getAttribute('prefix');
 
-url = new URL(atob(url))
-
-rewrite_url = (str) => {
-    proxied_url = '';
-    if (str.startsWith(window.location.origin + '/') && !str.startsWith(window.location.origin + prefix)) {
-        str =  '/' + str.split('/').splice(3).join('/');
-    }
-    if (str.startsWith('//')) {
-        str = 'http:' + str;
-    } else if (str.startsWith('/') && !str.startsWith(prefix)) {
-        str = url.origin + str
-    }
-    if (str.startsWith('https://') || str.startsWith('http://')) {
-         path = "/" + str.split('/').splice(3).join('/');
-         origin = btoa(str.split('/').splice(0, 3).join('/'));
-         return proxied_url = prefix + origin + path 
-    } else {
-       proxied_url = str;
-    }
-    return  proxied_url;
-  } 
-  
-
-let fetch_rewrite = window.fetch;  window.fetch = function(url, options) {
-    url = rewrite_url(url);
-    return fetch_rewrite.apply(this, arguments);
+function rewriteURL(url, encoding) { 
+   var websiteURL
+   if (encoding == 'base64') {
+      websiteURL = btoa(url.split('/').splice(0, 3).join('/'))
+   } else {
+      websiteURL = url.split('/').splice(0, 3).join('/')
+   }
+   const path = '/' + url.split('/').splice(3).join('/')
+   var rewritten
+   if (path == '/') {
+   rewritten =  '/fetch/' + websiteURL
+   }  else {
+      rewritten = `/fetch/${websiteURL}${path}`
+   }
+   return rewritten
 }
+let ajaxRewrite = window.XMLHttpRequest.prototype.open;window.XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
+ if (url.startsWith(`${window.location.protocol}//${window.location.hostname}`) && !url.startsWith(`${window.location.protocol}//${window.location.hostname}/fetch/`)) {
+      url = `/fetch/${urlData}/` + url.split('/').splice(3).join('/')
+ } else if (url.startsWith('http')) {
+   const hostname = url.split('/').slice(0, 3).join('/')
+   const path = url.split('/').slice(3).join('/')
+   const encodedHost = btoa(hostname)
+   const fullURL = encodedHost + '/' + path
+   url = '/fetch/' + fullURL
+   } else if (url.startsWith('//')) {
+         const encodedURL = btoa('http:'  + url)
+         url = '/alloy/?url=' + encodedURL
+   } else if (url.startsWith('/')) {
+         if (url.startsWith('/fetch')) {
+            url = url
+         } else if (url.startsWith('/alloy')) {
+            url = url
+         } else {
+         let apData = document.getElementById('alloyData');
+         let urlData = apData.getAttribute('data-alloyURL');
+         url = '/fetch/' + urlData + url
+         }
+   }
 
-let xml_rewrite = window.XMLHttpRequest.prototype.open;window.XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
-       url = rewrite_url(url);
-       return xml_rewrite.apply(this, arguments);
-    }
+
+    return ajaxRewrite.apply(this, arguments);
+   }
+
+   let windowFetchRewrite = window.fetch;window.fetch = function(url) {
+      if (url.startsWith(`https://${window.location.hostname}`)) {
+         url = url
+   } else if (url.startsWith('http')) {
+     const hostname = url.split('/').slice(0, 3).join('/')
+     const path = url.split('/').slice(3).join('/')
+     const encodedHost = btoa(hostname)
+     const fullURL = encodedHost + '/' + path
+     url = '/fetch/' + fullURL
+     } else if (url.startsWith('//')) {
+           const encodedURL = btoa('http:'  + url)
+           url = '/alloy/?url=' + encodedURL
+     } else if (url.startsWith('/')) {
+           if (url.startsWith('/fetch')) {
+              url = url
+           } else if (url.startsWith('/alloy')) {
+              url = url
+           } else {
+           let apData = document.getElementById('alloyData');
+           let urlData = apData.getAttribute('data-alloyURL');
+           url = '/fetch/' + urlData + url
+           }
+     }
+         return windowFetchRewrite.apply(this, arguments);
+        }
      
-let createelement_rewrite = document.createElement; document.createElement = function(tag) {
-    var element = createelement_rewrite.call(document, tag);
-    if (tag.toLowerCase() === 'script' || tag.toLowerCase() === 'iframe' || tag.toLowerCase() === 'embed') {
-        Object.defineProperty(element.__proto__, 'src', {
-            set: function(value) {
-                value = rewrite_url(value)
-                element.setAttribute('src', value)
-            }
-        }); 
-    } else if (tag.toLowerCase() === 'link') {
-        Object.defineProperty(element.__proto__, 'href', {
-            set: function(value) {
-                value = rewrite_url(value)
-                element.setAttribute('href', value)
-            }
-        }); 
-    } else if (tag.toLowerCase() === 'form') {
-        Object.defineProperty(element.__proto__, 'action', {
-            set: function(value) {
-                value = rewrite_url(value)
-                element.setAttribute('action', value)
-            }
-        }); 
-    }
-    return element;
-}
 
-let setattribute_rewrite = window.Element.prototype.setAttribute; window.Element.prototype.setAttribute = function(attribute, href) {
-    if (attribute == ('src') || attribute == ('href') || attribute == ('action')) {
-        href = rewrite_url(href)
-    } else href = href;
-    return setattribute_rewrite.apply(this, arguments)
- } 
 
-var previousState = window.history.state;
-setInterval(function() {
-       if (!window.location.pathname.startsWith(`${prefix}${btoa(url.origin)}/`)) {
-        history.replaceState('', '', `${prefix}${btoa(url.origin)}/${window.location.href.split('/').splice(3).join('/')}`);
+   //Create Element rewriting
+   var original = document.createElement;
+   document.createElement = function (tag) {
+     var element = original.call(document, tag);
+     if (tag.toLowerCase() === 'script') {
+       Object.defineProperty(element.__proto__, 'src', {
+         set: function(newValue) {
+            if (newValue.startsWith('/fetch/')) {
+               element.setAttribute('src', newValue)
+           } else if (newValue.startsWith('/alloy/')) {
+              element.setAttribute('src', newValue)
+           } else if (newValue.startsWith(`https://${window.location.hostname}`)) {
+                  element.setAttribute('src', newValue)
+              } else if (newValue.startsWith('//')) {
+              const encodedURL = btoa('http:' + newValue)
+              element.setAttribute('src', '/alloy/?url=' + encodedURL)
+             } else if (newValue.startsWith('https://')) {
+               const encodedURL = btoa(newValue)
+               element.setAttribute('src', '/alloy/?url=' + encodedURL)
+            } else if (newValue.startsWith('http://')) {
+               const encodedURL = btoa(newValue)
+               element.setAttribute('src', '/alloy/?url=' + encodedURL)
+              } else if (newValue.startsWith('/')) {
+              element.setAttribute('src', '/fetch/' + urlData   + newValue)
+          } else {
+              element.setAttribute('src', newValue)
+          }
+      }
+       }); 
+     } else if (tag.toLowerCase() === 'iframe') {
+      Object.defineProperty(element.__proto__, 'src', {
+        set: function(newValue) {
+         if (newValue.startsWith('/fetch/')) {
+            element.setAttribute('src', newValue)
+        } else if (newValue.startsWith('/alloy/')) {
+           element.setAttribute('src', newValue)
+        } else if (newValue.startsWith(`https://${window.location.hostname}`)) {
+         element.setAttribute('src', newValue)
+     } else if (newValue.startsWith('//')) {
+             const encodedURL = btoa('http:' + newValue)
+             element.setAttribute('src', '/alloy/?url=' + encodedURL)
+            } else if (newValue.startsWith('https://')) {
+              const encodedURL = btoa(newValue)
+              element.setAttribute('src', '/alloy/?url=' + encodedURL)
+           } else if (newValue.startsWith('http://')) {
+              const encodedURL = btoa(newValue)
+              element.setAttribute('src', '/alloy/?url=' + encodedURL)
+             } else if (newValue.startsWith('/')) {
+          element.setAttribute('src', '/fetch/' + urlData   + newValue)
+                
+         } else {
+            element.setAttribute('src', newValue)
+        }
+     }
+      }); 
     }
-}, 0.1);
+      else if (tag.toLowerCase() === 'link') {
+      Object.defineProperty(element.__proto__, 'href', {
+        set: function(newValue) {
+          if (newValue.startsWith('/fetch/')) {
+              element.setAttribute('href', newValue)
+          } else if (newValue.startsWith('/alloy/')) {
+             element.setAttribute('href', newValue)
+          } else if (newValue.startsWith(`https://${window.location.hostname}`)) {
+            element.setAttribute('href', newValue)
+         }  else if (newValue.startsWith('//')) {
+             const encodedURL = btoa('http:' + newValue)
+             element.setAttribute('href', '/alloy/?url=' + encodedURL)
+            } else if (newValue.startsWith('https://')) {
+              const encodedURL = btoa(newValue)
+              element.setAttribute('href', '/alloy/?url=' + encodedURL)
+           } else if (newValue.startsWith('http://')) {
+              const encodedURL = btoa(newValue)
+              element.setAttribute('href', '/alloy/?url=' + encodedURL)
+             } else if (newValue.startsWith('/')) {
+          element.setAttribute('href', '/fetch/' + urlData   + newValue)
+                
+         } else {
+            element.setAttribute('href', newValue)
+        }
+     }
+      }); 
+    } 
+     return element;
+   }
+
+
+   let setAttributeRewrite = window.Element.prototype.setAttribute;window.Element.prototype.setAttribute = function(name, value) {
+      switch(name) {
+         case 'src':
+            if (value.startsWith('/fetch/')) {
+               value = value
+            } else if (value.startsWith('/alloy/')) {
+                  value = value
+            } else if (value.startsWith('//')) {
+              value = rewriteURL('http:' + value, 'base64')
+           } else if (value.startsWith('/')) {
+            value = rewriteURL(urlData + value)
+            break;
+         } else if (value.startsWith('https://') || value.startsWith('http://')) {
+            value = rewriteURL(value, 'base64')
+         } else {
+            value = value
+         }
+           break;
+         case 'href':
+            if (value.startsWith('/fetch/')) {
+               value = value
+            } else if (value.startsWith('//')) {
+              value = rewriteURL('http:' + value, 'base64')
+           } else if (value.startsWith('/')) {
+            value = rewriteURL(urlData + value)
+            break;
+         } else if (value.startsWith('https://') || value.startsWith('http://')) {
+            value = rewriteURL(value, 'base64')
+         } else {
+            value = value
+         }
+           break;
+       }
+     
+     
+         return setAttributeRewrite.apply(this, arguments);
+        }
+
+         var previousState = window.history.state;
+         setInterval(function() {
+                if (!window.location.pathname.startsWith(`/fetch/${urlData}/`)) {
+                 history.replaceState('', '', `/fetch/${urlData}/${window.location.href.split('/').splice(3).join('/')}`);
+             }
+         }, 0.1);
