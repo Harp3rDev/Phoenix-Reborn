@@ -1,5 +1,5 @@
 {
-    "listenip":"0.0.0.0",
+    "prefix": "/math/",
     "port": "8080",
     "ssl": false
 }
